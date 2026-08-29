@@ -1,0 +1,192 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>来开博客</title>
+    <meta name="description" content="一个记录技术与生活的个人博客" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="来开博客"
+      href="/rss.xml"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="container">
+        <a href="/" class="site-title">来开博客</a>
+        <a href="/rss.xml" class="rss-link">RSS</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      {
+        posts.length === 0 ? (
+          <p class="empty">还没有文章，第一篇正在路上。</p>
+        ) : (
+          <ul class="post-list">
+            {posts.map((post) => (
+              <li class="post-item">
+                <a href={`/blog/${post.id}/`} class="post-link">
+                  <h2 class="post-title">{post.data.title}</h2>
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('zh-CN', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                  <p class="post-description">{post.data.description}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© {new Date().getFullYear()} 来开博客 · <a href="/rss.xml">RSS 订阅</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :root {
+    --text: #1f2430;
+    --text-muted: #6b7280;
+    --accent: #4f6ef7;
+    --border: #e5e7eb;
+    --bg: #ffffff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text: #e6e8ee;
+      --text-muted: #9aa1ad;
+      --accent: #8fa3ff;
+      --border: #2a3040;
+      --bg: #14171f;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      'PingFang SC',
+      'Hiragino Sans GB',
+      'Microsoft YaHei',
+      sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .site-header nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .site-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .rss-link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .rss-link:hover {
+    text-decoration: underline;
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 2rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .post-item {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.75rem;
+  }
+
+  .post-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-title {
+    font-size: 1.35rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--accent);
+  }
+
+  time {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .post-description {
+    margin: 0.5rem 0 0;
+    color: var(--text-muted);
+  }
+
+  .empty {
+    margin: 3rem 0;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 0 2.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .site-footer a {
+    color: var(--accent);
+  }
+</style>
