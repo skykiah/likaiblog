@@ -7,8 +7,11 @@
 - 首页文章列表（按时间倒序，展示标签）
 - 文章详情页（Markdown 渲染 + Shiki 代码高亮）
 - 深色模式：默认跟随系统，支持手动切换（localStorage 记忆）
+- giscus 评论（基于 GitHub Discussions，仅文章页加载）
+- 站内搜索（`/search/`，构建期索引 + 客户端过滤）
 - 标签页（`/tags/`）与标签文章列表（`/tags/<tag>/`）
 - 按年份归档页（`/archives/`）
+- 友链页（`/friends/`）
 - 关于页（`/about/`）
 - RSS 订阅（`/rss.xml`）
 - sitemap（`/sitemap-index.xml`）
