@@ -1,0 +1,167 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// 构建时把全部已发布文章生成一份轻量 JSON，供客户端搜索
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const index = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  date: post.data.pubDate.toLocaleDateString('zh-CN'),
+  url: `/blog/${post.id}/`,
+  tags: post.data.tags,
+}));
+---
+
+<BaseLayout title="搜索 · 来开博客" description="站内搜索来开博客的全部文章">
+  <h1 class="page-title">搜索</h1>
+  <search>
+    <input
+      id="search-input"
+      type="search"
+      placeholder="输入关键词，按标题、摘要或标签匹配…"
+      autocomplete="off"
+      autofocus
+    />
+  </search>
+  <p class="result-hint" id="result-hint" hidden></p>
+  <ul class="post-list" id="result-list">
+    <noscript>
+      <li class="empty">搜索需要启用 JavaScript；或者直接浏览<a href="/archives/">归档</a>。</li>
+    </noscript>
+  </ul>
+
+  <script define:vars={{ index }}>
+    const input = document.getElementById('search-input');
+    const list = document.getElementById('result-list');
+    const hint = document.getElementById('result-hint');
+
+    const render = (results) => {
+      list.innerHTML = '';
+      if (results.length === 0) {
+        hint.hidden = false;
+        hint.textContent = '没有匹配的文章。';
+        return;
+      }
+      hint.hidden = true;
+      for (const post of results) {
+        const li = document.createElement('li');
+        li.className = 'post-item';
+        const a = document.createElement('a');
+        a.className = 'post-link';
+        a.href = post.url;
+        const h2 = document.createElement('h2');
+        h2.className = 'post-title';
+        h2.textContent = post.title;
+        const time = document.createElement('time');
+        time.textContent = post.date;
+        const p = document.createElement('p');
+        p.className = 'post-description';
+        p.textContent = post.description;
+        a.append(h2, time, p);
+        li.appendChild(a);
+        list.appendChild(li);
+      }
+    };
+
+    const search = () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) {
+        hint.hidden = true;
+        list.innerHTML = '';
+        return;
+      }
+      const words = q.split(/\s+/);
+      const results = index.filter((post) => {
+        const haystack = (post.title + ' ' + post.description + ' ' + post.tags.join(' '))
+          .toLowerCase();
+        return words.every((w) => haystack.includes(w));
+      });
+      render(results);
+    };
+
+    input.addEventListener('input', search);
+  </script>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: 1.6rem;
+    margin: 2.5rem 0 1.25rem;
+  }
+
+  search {
+    display: block;
+  }
+
+  #search-input {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  #search-input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: transparent;
+  }
+
+  .result-hint {
+    margin: 1rem 0 0;
+    color: var(--text-muted);
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 1.5rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .post-item {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+
+  .post-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-title {
+    font-size: 1.2rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--accent);
+  }
+
+  time {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .post-description {
+    margin: 0.4rem 0 0;
+    color: var(--text-muted);
+  }
+
+  .empty {
+    color: var(--text-muted);
+  }
+
+  .empty a {
+    color: var(--accent);
+  }
+</style>
