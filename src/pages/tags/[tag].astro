@@ -27,20 +27,22 @@ const { tag, posts } = Astro.props;
 
 <BaseLayout title={`标签：${tag} · 来开博客`} description={`标签「${tag}」下的全部文章`}>
   <h1 class="page-title">标签：<span class="accent">{tag}</span></h1>
-  <p class="count-hint">{posts.length} 篇文章</p>
+  <p class="count-hint">{posts.length} 篇文章 · <a href="/tags/">全部标签</a></p>
   <ul class="post-list">
     {
       posts.map((post) => (
         <li class="post-item">
           <a href={`/blog/${post.id}/`} class="post-link">
+            <div class="post-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('zh-CN', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            </div>
             <h2 class="post-title">{post.data.title}</h2>
-            <time datetime={post.data.pubDate.toISOString()}>
-              {post.data.pubDate.toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </time>
             <p class="post-description">{post.data.description}</p>
           </a>
         </li>
@@ -51,8 +53,9 @@ const { tag, posts } = Astro.props;
 
 <style>
   .page-title {
-    font-size: 1.6rem;
-    margin: 2.5rem 0 0.25rem;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    margin: 3rem 0 0.25rem;
   }
 
   .accent {
@@ -62,44 +65,71 @@ const { tag, posts } = Astro.props;
   .count-hint {
     color: var(--text-muted);
     font-size: 0.875rem;
-    margin: 0 0 1.5rem;
+    margin: 0 0 2rem;
+  }
+
+  .count-hint a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .count-hint a:hover {
+    text-decoration: underline;
   }
 
   .post-list {
     list-style: none;
-    margin: 0;
+    margin: 0 0 2.5rem;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 1.1rem;
   }
 
   .post-item {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 1.75rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
   }
 
   .post-link {
+    display: block;
+    padding: 1.2rem 1.5rem;
     text-decoration: none;
     color: inherit;
+    border-radius: 12px;
+  }
+
+  .post-meta time {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 
   .post-title {
-    font-size: 1.25rem;
-    margin: 0 0 0.25rem;
+    font-size: 1.2rem;
+    margin: 0.35rem 0 0.35rem;
+    transition: color 0.18s ease;
   }
 
   .post-link:hover .post-title {
     color: var(--accent);
   }
 
-  time {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-  }
-
   .post-description {
-    margin: 0.5rem 0 0;
+    margin: 0;
     color: var(--text-muted);
+    font-size: 0.93rem;
   }
 </style>

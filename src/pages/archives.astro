@@ -19,62 +19,103 @@ const years = [...byYear.entries()].sort((a, b) => b[0] - a[0]);
 <BaseLayout title="归档 · 来开博客" description="来开博客全部文章的按年归档">
   <h1 class="page-title">归档</h1>
   <p class="count-hint">共 {posts.length} 篇</p>
-  {
-    years.map(([year, yearPosts]) => (
-      <section class="year-group">
-        <h2 class="year">{year}</h2>
-        <ul class="post-list">
-          {yearPosts.map((post) => (
-            <li class="post-item">
-              <a href={`/blog/${post.id}/`} class="post-link">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {post.data.pubDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}
-                </time>
-                <span class="post-title">{post.data.title}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  <div class="timeline">
+    {
+      years.map(([year, yearPosts]) => (
+        <section class="year-group">
+          <h2 class="year">{year}<span class="year-count">{yearPosts.length} 篇</span></h2>
+          <ul class="post-list">
+            {yearPosts.map((post) => (
+              <li class="post-item">
+                <a href={`/blog/${post.id}/`} class="post-link">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}
+                  </time>
+                  <span class="post-title">{post.data.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
 </BaseLayout>
 
 <style>
   .page-title {
-    font-size: 1.6rem;
-    margin: 2.5rem 0 0.25rem;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    margin: 3rem 0 0.25rem;
   }
 
   .count-hint {
     color: var(--text-muted);
     font-size: 0.875rem;
-    margin: 0 0 1.5rem;
+    margin: 0 0 2rem;
+  }
+
+  .timeline {
+    margin-bottom: 2.5rem;
+  }
+
+  .year-group {
+    position: relative;
+    padding-left: 1.4rem;
+    border-left: 2px solid var(--border);
   }
 
   .year {
-    font-size: 1.25rem;
-    margin: 2rem 0 0.75rem;
+    position: relative;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
     color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  /* 时间线节点 */
+  .year::before {
+    content: '';
+    position: absolute;
+    left: -1.9rem;
+    top: 0.5rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .year-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: system-ui, sans-serif;
+    margin-left: 0.6rem;
+    font-weight: 400;
   }
 
   .post-list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 1rem;
     display: flex;
     flex-direction: column;
   }
 
   .post-item {
-    border-bottom: 1px solid var(--border);
-    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .post-item:last-child {
+    border-bottom: none;
   }
 
   .post-link {
     display: flex;
     align-items: baseline;
-    gap: 0.75rem;
+    gap: 0.9rem;
+    padding: 0.55rem 0;
     text-decoration: none;
     color: inherit;
   }
@@ -84,12 +125,14 @@ const years = [...byYear.entries()].sort((a, b) => b[0] - a[0]);
   }
 
   time {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     white-space: nowrap;
+    font-family: var(--font-mono);
   }
 
   .post-title {
-    font-size: 1rem;
+    font-size: 0.98rem;
+    transition: color 0.15s ease;
   }
 </style>

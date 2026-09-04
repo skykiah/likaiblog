@@ -35,15 +35,73 @@ const { title, description } = Astro.props;
   <body>
     <header class="site-header">
       <nav class="container">
-        <a href="/" class="site-title">来开博客</a>
+        <a href="/" class="site-title">
+          <span class="logo-dot" aria-hidden="true"></span>
+          来开博客
+        </a>
         <div class="nav-links">
           <a href="/search/" class="nav-link">搜索</a>
           <a href="/tags/" class="nav-link">标签</a>
           <a href="/archives/" class="nav-link">归档</a>
           <a href="/friends/" class="nav-link">友链</a>
           <a href="/about/" class="nav-link">关于</a>
-          <a href="/rss.xml" class="nav-link">RSS</a>
-          <button id="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式"></button>
+          <a
+            href="/rss.xml"
+            class="nav-link nav-rss"
+            aria-label="RSS 订阅"
+            title="RSS 订阅"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              width="14"
+              height="14"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 2v2.5c5.245 0 9.5 4.255 9.5 9.5H14C14 7.373 8.627 2 2 2zm0 4.5V9c2.76 0 5 2.24 5 5h2.5c0-4.142-3.358-7.5-7.5-7.5zM3.5 11a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"
+              ></path>
+            </svg>
+            <span>RSS</span>
+          </a>
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="切换深色模式"
+            title="切换深色模式"
+          >
+            <svg
+              class="icon icon-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4"></circle>
+              <path
+                d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+              ></path>
+            </svg>
+            <svg
+              class="icon icon-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
         </div>
       </nav>
     </header>
@@ -62,11 +120,8 @@ const { title, description } = Astro.props;
       const toggle = document.getElementById('theme-toggle') as HTMLButtonElement;
       const root = document.documentElement;
 
-      const icons: Record<string, string> = { light: '🌙', dark: '☀️' };
-
       const apply = (theme: string) => {
         root.dataset.theme = theme;
-        toggle.textContent = icons[theme];
       };
 
       apply(root.dataset.theme ?? 'light');
@@ -81,22 +136,33 @@ const { title, description } = Astro.props;
 </html>
 
 <style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&display=swap');
+
   :root {
-    --text: #1f2430;
-    --text-muted: #6b7280;
-    --accent: #4f6ef7;
-    --border: #e5e7eb;
-    --bg: #ffffff;
-    --code-bg: #f6f8fa;
+    --text: #1c2130;
+    --text-muted: #5c6370;
+    --accent: #3555e8;
+    --accent-soft: #eaeeff;
+    --border: #e4e7ee;
+    --bg: #fbfbfd;
+    --bg-raised: #ffffff;
+    --code-bg: #f2f4f9;
+    --shadow-sm: 0 1px 2px rgb(28 33 48 / 0.05);
+    --shadow-md: 0 4px 16px rgb(28 33 48 / 0.08);
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
   }
 
   :root[data-theme='dark'] {
-    --text: #e6e8ee;
-    --text-muted: #9aa1ad;
-    --accent: #8fa3ff;
-    --border: #2a3040;
-    --bg: #14171f;
-    --code-bg: #1d2230;
+    --text: #dfe3ea;
+    --text-muted: #98a0ad;
+    --accent: #93a8ff;
+    --accent-soft: #232a45;
+    --border: #2b3244;
+    --bg: #12141c;
+    --bg-raised: #191d28;
+    --code-bg: #1c2130;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 16px rgb(0 0 0 / 0.4);
   }
 
   * {
@@ -115,76 +181,168 @@ const { title, description } = Astro.props;
       sans-serif;
     color: var(--text);
     background: var(--bg);
-    line-height: 1.7;
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 
   .container {
-    max-width: 42rem;
+    max-width: 44rem;
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0 1.5rem;
   }
 
   .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
 
   .site-header nav {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
   }
 
   .site-title {
-    font-size: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1.15rem;
     font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--text);
     text-decoration: none;
   }
 
-  .site-title:hover {
-    color: var(--accent);
+  .logo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--accent), #7a8cff);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .site-title:hover .logo-dot {
+    transform: rotate(45deg);
+  }
+
+  .logo-dot {
+    transition: transform 0.25s ease;
   }
 
   .nav-links {
     display: flex;
-    align-items: baseline;
-    gap: 1.1rem;
+    align-items: center;
+    gap: 0.35rem;
   }
 
   .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition:
+      color 0.18s ease,
+      background 0.18s ease;
   }
 
   .nav-link:hover {
     color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .nav-rss .icon {
+    display: block;
   }
 
   #theme-toggle {
-    border: none;
-    background: none;
-    padding: 0;
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-left: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-raised);
+    color: var(--text-muted);
     cursor: pointer;
-    color: var(--text);
-    line-height: inherit;
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  #theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.06);
+  }
+
+  :root[data-theme='light'] .icon-moon {
+    display: none;
+  }
+
+  :root[data-theme='light'] .icon-sun {
+    display: block;
+  }
+
+  :root[data-theme='dark'] .icon-sun {
+    display: none;
+  }
+
+  :root[data-theme='dark'] .icon-moon {
+    display: block;
   }
 
   main {
-    padding-bottom: 3rem;
+    padding-bottom: 3.5rem;
   }
 
   .site-footer {
     border-top: 1px solid var(--border);
-    padding: 1.5rem 0 2.5rem;
-    font-size: 0.875rem;
+    padding: 1.75rem 0 2.75rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
   }
 
   .site-footer a {
     color: var(--accent);
+    text-decoration: none;
+  }
+
+  .site-footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 </style>
