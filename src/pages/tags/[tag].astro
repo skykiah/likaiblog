@@ -26,14 +26,20 @@ const { tag, posts } = Astro.props;
 ---
 
 <BaseLayout title={`标签：${tag} · 来开博客`} description={`标签「${tag}」下的全部文章`}>
-  <h1 class="page-title">标签：<span class="accent">{tag}</span></h1>
-  <p class="count-hint">{posts.length} 篇文章 · <a href="/tags/">全部标签</a></p>
-  <ul class="post-list">
-    {
-      posts.map((post) => (
-        <li class="post-item">
-          <a href={`/blog/${post.id}/`} class="post-link">
-            <div class="post-meta">
+  <div class="container">
+    <h1 class="page-title">{tag}</h1>
+    <p class="page-sub">
+      {posts.length} 篇文章 · <a href="/tags/">全部标签</a>
+    </p>
+    <ul class="post-list">
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/blog/${post.id}/`} class="row">
+              <div class="row-text">
+                <h2 class="row-title">{post.data.title}</h2>
+                <p class="row-desc">{post.data.description}</p>
+              </div>
               <time datetime={post.data.pubDate.toISOString()}>
                 {post.data.pubDate.toLocaleDateString('zh-CN', {
                   year: 'numeric',
@@ -41,95 +47,88 @@ const { tag, posts } = Astro.props;
                   day: 'numeric',
                 })}
               </time>
-            </div>
-            <h2 class="post-title">{post.data.title}</h2>
-            <p class="post-description">{post.data.description}</p>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </BaseLayout>
 
 <style>
   .page-title {
-    font-size: 1.7rem;
-    letter-spacing: -0.02em;
-    margin: 3rem 0 0.25rem;
-  }
-
-  .accent {
+    font-size: clamp(2.2rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 4rem 0 0.3rem;
     color: var(--accent);
   }
 
-  .count-hint {
-    color: var(--text-muted);
-    font-size: 0.875rem;
+  .page-sub {
+    color: var(--text-tertiary);
+    font-size: 0.95rem;
     margin: 0 0 2rem;
   }
 
-  .count-hint a {
+  .page-sub a {
     color: var(--accent);
     text-decoration: none;
   }
 
-  .count-hint a:hover {
+  .page-sub a:hover {
     text-decoration: underline;
   }
 
   .post-list {
     list-style: none;
-    margin: 0 0 2.5rem;
+    margin: 0 0 3rem;
     padding: 0;
+  }
+
+  .row {
     display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-  }
-
-  .post-item {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      border-color 0.2s ease;
-  }
-
-  .post-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-  }
-
-  .post-link {
-    display: block;
-    padding: 1.2rem 1.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.4rem 0.25rem;
+    border-bottom: 1px solid var(--border);
     text-decoration: none;
     color: inherit;
-    border-radius: 12px;
   }
 
-  .post-meta time {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
+  li:last-child .row {
+    border-bottom: none;
   }
 
-  .post-title {
+  .row-title {
     font-size: 1.2rem;
-    margin: 0.35rem 0 0.35rem;
-    transition: color 0.18s ease;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.3rem;
+    transition: color 0.2s ease;
   }
 
-  .post-link:hover .post-title {
+  .row:hover .row-title {
     color: var(--accent);
   }
 
-  .post-description {
+  .row-desc {
     margin: 0;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.93rem;
+  }
+
+  .row time {
+    font-size: 0.83rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 640px) {
+    .row {
+      flex-direction: column;
+      gap: 0.3rem;
+    }
   }
 </style>

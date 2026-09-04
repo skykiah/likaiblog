@@ -17,81 +17,83 @@ const index = posts.map((post) => ({
 ---
 
 <BaseLayout title="搜索 · 来开博客" description="站内搜索来开博客的全部文章">
-  <h1 class="page-title">搜索</h1>
-  <search>
-    <input
-      id="search-input"
-      type="search"
-      placeholder="输入关键词，按标题、摘要或标签匹配…"
-      autocomplete="off"
-      autofocus
-    />
-  </search>
-  <p class="result-hint" id="result-hint" hidden></p>
-  <ul class="post-list" id="result-list">
-    <noscript>
-      <li class="empty">搜索需要启用 JavaScript；或者直接浏览<a href="/archives/">归档</a>。</li>
-    </noscript>
-  </ul>
+  <div class="container">
+    <h1 class="page-title">搜索</h1>
+    <search>
+      <input
+        id="search-input"
+        type="search"
+        placeholder="搜索文章：标题、摘要或标签…"
+        autocomplete="off"
+        autofocus
+      />
+    </search>
+    <p class="result-hint" id="result-hint" hidden></p>
+    <ul class="post-list" id="result-list">
+      <noscript>
+        <li class="empty">搜索需要启用 JavaScript；或者直接浏览<a href="/archives/">归档</a>。</li>
+      </noscript>
+    </ul>
 
-  <script define:vars={{ index }}>
-    const input = document.getElementById('search-input');
-    const list = document.getElementById('result-list');
-    const hint = document.getElementById('result-hint');
+    <script define:vars={{ index }}>
+      const input = document.getElementById('search-input');
+      const list = document.getElementById('result-list');
+      const hint = document.getElementById('result-hint');
 
-    const render = (results) => {
-      list.innerHTML = '';
-      if (results.length === 0) {
-        hint.hidden = false;
-        hint.textContent = '没有匹配的文章。';
-        return;
-      }
-      hint.hidden = true;
-      for (const post of results) {
-        const li = document.createElement('li');
-        li.className = 'post-item';
-        const a = document.createElement('a');
-        a.className = 'post-link';
-        a.href = post.url;
-        const time = document.createElement('time');
-        time.textContent = post.date;
-        const h2 = document.createElement('h2');
-        h2.className = 'post-title';
-        h2.textContent = post.title;
-        const p = document.createElement('p');
-        p.className = 'post-description';
-        p.textContent = post.description;
-        a.append(time, h2, p);
-        li.appendChild(a);
-        list.appendChild(li);
-      }
-    };
-
-    const search = () => {
-      const q = input.value.trim().toLowerCase();
-      if (!q) {
-        hint.hidden = true;
+      const render = (results) => {
         list.innerHTML = '';
-        return;
-      }
-      const words = q.split(/\s+/);
-      const results = index.filter((post) => {
-        const haystack = (post.title + ' ' + post.description + ' ' + post.tags.join(' '))
-          .toLowerCase();
-        return words.every((w) => haystack.includes(w));
-      });
-      render(results);
-    };
+        if (results.length === 0) {
+          hint.hidden = false;
+          hint.textContent = '没有匹配的文章。';
+          return;
+        }
+        hint.hidden = true;
+        for (const post of results) {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.className = 'row';
+          a.href = post.url;
+          const time = document.createElement('time');
+          time.textContent = post.date;
+          const h2 = document.createElement('h2');
+          h2.className = 'row-title';
+          h2.textContent = post.title;
+          const p = document.createElement('p');
+          p.className = 'row-desc';
+          p.textContent = post.description;
+          a.append(time, h2, p);
+          li.appendChild(a);
+          list.appendChild(li);
+        }
+      };
 
-    input.addEventListener('input', search);
-  </script>
+      const search = () => {
+        const q = input.value.trim().toLowerCase();
+        if (!q) {
+          hint.hidden = true;
+          list.innerHTML = '';
+          return;
+        }
+        const words = q.split(/\s+/);
+        const results = index.filter((post) => {
+          const haystack = (post.title + ' ' + post.description + ' ' + post.tags.join(' '))
+            .toLowerCase();
+          return words.every((w) => haystack.includes(w));
+        });
+        render(results);
+      };
+
+      input.addEventListener('input', search);
+    </script>
+  </div>
 </BaseLayout>
 
 <style>
   .page-title {
-    font-size: 1.7rem;
-    letter-spacing: -0.02em;
-    margin: 3rem 0 1.25rem;
+    font-size: clamp(2.2rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 4rem 0 1.5rem;
   }
 
   search {
@@ -100,88 +102,71 @@ const index = posts.map((post) => ({
 
   #search-input {
     width: 100%;
-    font-size: 1rem;
-    padding: 0.7rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg-raised);
+    font-size: 1.05rem;
+    padding: 0.85rem 1.15rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
     color: var(--text);
     font-family: inherit;
-    box-shadow: var(--shadow-sm);
-    transition:
-      border-color 0.18s ease,
-      box-shadow 0.18s ease;
+    transition: box-shadow 0.2s ease;
+  }
+
+  #search-input::placeholder {
+    color: var(--text-tertiary);
   }
 
   #search-input:focus {
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 1px var(--accent) inset;
   }
 
   .result-hint {
-    margin: 1rem 0 0;
-    color: var(--text-muted);
+    margin: 1.25rem 0 0;
+    color: var(--text-tertiary);
   }
 
   .post-list {
     list-style: none;
-    margin: 1.5rem 0 2.5rem;
+    margin: 1.5rem 0 3rem;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
   }
 
-  .post-item {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      border-color 0.2s ease;
-  }
-
-  .post-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
-  }
-
-  .post-link {
+  .row {
     display: block;
-    padding: 1.15rem 1.4rem;
+    padding: 1.3rem 0.4rem;
+    border-bottom: 1px solid var(--border);
     text-decoration: none;
     color: inherit;
-    border-radius: 12px;
   }
 
-  .post-link time {
-    font-size: 0.82rem;
-    color: var(--text-muted);
+  .row time {
+    font-size: 0.83rem;
+    color: var(--text-tertiary);
     font-family: var(--font-mono);
   }
 
-  .post-title {
-    font-size: 1.18rem;
-    margin: 0.3rem 0 0.35rem;
-    transition: color 0.18s ease;
+  .row-title {
+    font-size: 1.2rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    margin: 0.3rem 0 0.3rem;
+    transition: color 0.2s ease;
   }
 
-  .post-link:hover .post-title {
+  .row:hover .row-title {
     color: var(--accent);
   }
 
-  .post-description {
+  .row-desc {
     margin: 0;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.93rem;
   }
 
   .empty {
-    color: var(--text-muted);
+    color: var(--text-tertiary);
+    padding: 1rem 0.4rem;
   }
 
   .empty a {

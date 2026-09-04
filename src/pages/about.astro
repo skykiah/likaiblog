@@ -3,52 +3,60 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="关于 · 来开博客" description="关于来开博客和它的作者">
-  <article class="prose">
-    <h1 class="page-title">关于</h1>
-    <p>
-      你好，欢迎来到「来开博客」。这里记录我在技术路上的探索与思考：踩过的坑、解决过的问题、还有那些值得记下来的想法。
-    </p>
-    <h2>关于本站</h2>
-    <ul>
-      <li>基于 <a href="https://astro.build/">Astro</a> 构建的纯静态站点，无后台、无数据库；</li>
-      <li>所有文章以 Markdown 书写，托管在 <a href="https://github.com/skykiah/likaiblog">GitHub</a>；</li>
-      <li>内容优先，简单可持续。</li>
-    </ul>
-    <h2>订阅</h2>
-    <p>
-      如果想持续关注更新，欢迎通过 <a href="/rss.xml">RSS</a> 订阅本站——博客的灵魂功能。
-    </p>
-  </article>
+  <div class="container">
+    <article class="prose">
+      <h1 class="page-title">关于</h1>
+      <p>
+        你好，欢迎来到「来开博客」。这里记录我在技术路上的探索与思考：踩过的坑、解决过的问题、还有那些值得记下来的想法。
+      </p>
+      <h2>关于本站</h2>
+      <ul>
+        <li>基于 <a href="https://astro.build/">Astro</a> 构建的纯静态站点，无后台、无数据库；</li>
+        <li>所有文章以 Markdown 书写，托管在 <a href="https://github.com/skykiah/likaiblog">GitHub</a>；</li>
+        <li>内容优先，简单可持续。</li>
+      </ul>
+      <h2>订阅</h2>
+      <p>
+        如果想持续关注更新，欢迎通过 <a href="/rss.xml">RSS</a> 订阅本站——博客的灵魂功能。
+      </p>
+    </article>
+  </div>
 </BaseLayout>
 
 <style>
   .page-title {
-    font-size: 1.7rem;
-    letter-spacing: -0.02em;
-    margin: 3rem 0 1.5rem;
+    font-size: clamp(2.2rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 4rem 0 1.5rem;
+  }
+
+  .prose {
+    font-size: 1.04rem;
+    line-height: 1.85;
+    max-width: 38em;
+    padding-bottom: 1rem;
   }
 
   .prose :global(h2) {
-    font-size: 1.2rem;
-    margin: 2rem 0 0.6rem;
-    padding-left: 0.65rem;
-    border-left: 3px solid var(--accent);
-    line-height: 1.4;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 2.5rem 0 0.75rem;
   }
 
   .prose :global(p) {
-    margin: 0.8rem 0;
-    max-width: 38em;
+    margin: 0.9rem 0;
   }
 
   .prose :global(a) {
     color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
   .prose :global(a:hover) {
-    border-bottom-color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .prose :global(ul) {
@@ -56,6 +64,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .prose :global(li) {
-    margin: 0.35rem 0;
+    margin: 0.4rem 0;
+  }
+
+  .prose :global(li::marker) {
+    color: var(--text-tertiary);
   }
 </style>
