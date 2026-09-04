@@ -4,11 +4,15 @@
 
 ## 功能
 
-- 首页文章列表（按时间倒序）
-- 文章详情页（Markdown 渲染 + Shiki 代码高亮，自动适配深色模式）
+- 首页文章列表（按时间倒序，展示标签）
+- 文章详情页（Markdown 渲染 + Shiki 代码高亮）
+- 深色模式：默认跟随系统，支持手动切换（localStorage 记忆）
+- 标签页（`/tags/`）与标签文章列表（`/tags/<tag>/`）
+- 按年份归档页（`/archives/`）
+- 关于页（`/about/`）
 - RSS 订阅（`/rss.xml`）
 - sitemap（`/sitemap-index.xml`）
-- 草稿支持：frontmatter 中 `draft: true` 的文章不会出现在首页、RSS 和构建产物中
+- 草稿支持：frontmatter 中 `draft: true` 的文章不会出现在任何发布渠道
 
 ## 写文章
 
@@ -19,6 +23,8 @@
 title: 文章标题
 description: 一句话摘要
 pubDate: 2026-08-29
+tags:
+  - 标签A        # 可选，支持多个
 # draft: true  ← 加上这行表示草稿，不会发布
 ---
 

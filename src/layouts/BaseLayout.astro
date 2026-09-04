@@ -1,0 +1,188 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="来开博客"
+      href="/rss.xml"
+    />
+    <script is:inline>
+      // 首帧前应用主题，避免深色模式闪白
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (stored === null && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="container">
+        <a href="/" class="site-title">来开博客</a>
+        <div class="nav-links">
+          <a href="/tags/" class="nav-link">标签</a>
+          <a href="/archives/" class="nav-link">归档</a>
+          <a href="/about/" class="nav-link">关于</a>
+          <a href="/rss.xml" class="nav-link">RSS</a>
+          <button id="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式"></button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© {new Date().getFullYear()} 来开博客 · <a href="/rss.xml">RSS 订阅</a></p>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.getElementById('theme-toggle') as HTMLButtonElement;
+      const root = document.documentElement;
+
+      const icons: Record<string, string> = { light: '🌙', dark: '☀️' };
+
+      const apply = (theme: string) => {
+        root.dataset.theme = theme;
+        toggle.textContent = icons[theme];
+      };
+
+      apply(root.dataset.theme ?? 'light');
+
+      toggle.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        apply(next);
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --text: #1f2430;
+    --text-muted: #6b7280;
+    --accent: #4f6ef7;
+    --border: #e5e7eb;
+    --bg: #ffffff;
+    --code-bg: #f6f8fa;
+  }
+
+  :root[data-theme='dark'] {
+    --text: #e6e8ee;
+    --text-muted: #9aa1ad;
+    --accent: #8fa3ff;
+    --border: #2a3040;
+    --bg: #14171f;
+    --code-bg: #1d2230;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      'PingFang SC',
+      'Hiragino Sans GB',
+      'Microsoft YaHei',
+      sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .site-header nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .site-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .site-title:hover {
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: baseline;
+    gap: 1.1rem;
+  }
+
+  .nav-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .nav-link:hover {
+    color: var(--accent);
+  }
+
+  #theme-toggle {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text);
+    line-height: inherit;
+  }
+
+  main {
+    padding-bottom: 3rem;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 0 2.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .site-footer a {
+    color: var(--accent);
+  }
+</style>

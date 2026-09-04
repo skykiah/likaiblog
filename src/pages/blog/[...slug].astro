@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -19,131 +20,30 @@ const formattedDate = post.data.pubDate.toLocaleDateString('zh-CN', {
 });
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{post.data.title} · 来开博客</title>
-    <meta name="description" content={post.data.description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="来开博客"
-      href="/rss.xml"
-    />
-  </head>
-  <body>
-    <header class="site-header">
-      <nav class="container">
-        <a href="/" class="site-title">← 来开博客</a>
-        <a href="/rss.xml" class="rss-link">RSS</a>
-      </nav>
+<BaseLayout title={`${post.data.title} · 来开博客`} description={post.data.description}>
+  <article>
+    <header class="post-header">
+      <h1 class="post-title">{post.data.title}</h1>
+      <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+      {
+        post.data.tags.length > 0 && (
+          <div class="tag-row">
+            {post.data.tags.map((tag) => (
+              <a href={`/tags/${tag}/`} class="tag-chip">
+                {tag}
+              </a>
+            ))}
+          </div>
+        )
+      }
     </header>
-
-    <main class="container">
-      <article>
-        <header class="post-header">
-          <h1 class="post-title">{post.data.title}</h1>
-          <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
-        </header>
-        <div class="prose">
-          <Content />
-        </div>
-      </article>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container">
-        <p>© {new Date().getFullYear()} 来开博客 · <a href="/rss.xml">RSS 订阅</a></p>
-      </div>
-    </footer>
-  </body>
-</html>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
 
 <style>
-  :root {
-    --text: #1f2430;
-    --text-muted: #6b7280;
-    --accent: #4f6ef7;
-    --border: #e5e7eb;
-    --bg: #ffffff;
-    --code-bg: #f6f8fa;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --text: #e6e8ee;
-      --text-muted: #9aa1ad;
-      --accent: #8fa3ff;
-      --border: #2a3040;
-      --bg: #14171f;
-      --code-bg: #1d2230;
-    }
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    font-family:
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      'PingFang SC',
-      'Hiragino Sans GB',
-      'Microsoft YaHei',
-      sans-serif;
-    color: var(--text);
-    background: var(--bg);
-    line-height: 1.7;
-  }
-
-  .container {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 0 1.25rem;
-  }
-
-  .site-header {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .site-header nav {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
-  }
-
-  .site-title {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  .site-title:hover {
-    color: var(--accent);
-  }
-
-  .rss-link {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .rss-link:hover {
-    text-decoration: underline;
-  }
-
-  main {
-    padding-bottom: 3rem;
-  }
-
   .post-header {
     margin: 2.5rem 0 2rem;
   }
@@ -157,6 +57,26 @@ const formattedDate = post.data.pubDate.toLocaleDateString('zh-CN', {
   .post-header time {
     font-size: 0.875rem;
     color: var(--text-muted);
+  }
+
+  .tag-row {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag-chip {
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-radius: 999px;
+    padding: 0.1rem 0.65rem;
+    text-decoration: none;
+  }
+
+  .tag-chip:hover {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
   }
 
   .prose :global(h2) {
@@ -214,14 +134,19 @@ const formattedDate = post.data.pubDate.toLocaleDateString('zh-CN', {
     margin: 2rem 0;
   }
 
-  .site-footer {
-    border-top: 1px solid var(--border);
-    padding: 1.5rem 0 2.5rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
+  .prose :global(table) {
+    border-collapse: collapse;
+    margin: 1rem 0;
   }
 
-  .site-footer a {
-    color: var(--accent);
+  .prose :global(th),
+  .prose :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.75rem;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.5rem;
   }
 </style>

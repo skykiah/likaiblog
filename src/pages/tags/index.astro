@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+const counts = new Map<string, number>();
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+}
+
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<BaseLayout title="标签 · 来开博客" description="按标签浏览来开博客的全部文章">
+  <h1 class="page-title">标签</h1>
+  {
+    tags.length === 0 ? (
+      <p class="empty">还没有任何标签。</p>
+    ) : (
+      <ul class="tag-list">
+        {tags.map(([tag, count]) => (
+          <li>
+            <a href={`/tags/${tag}/`} class="tag-chip">
+              {tag} <span class="count">{count}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: 1.6rem;
+    margin: 2.5rem 0 1.5rem;
+  }
+
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .tag-chip {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-radius: 999px;
+    padding: 0.25rem 0.9rem;
+    text-decoration: none;
+  }
+
+  .tag-chip:hover {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  .count {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-left: 0.15rem;
+  }
+
+  .empty {
+    margin: 3rem 0;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>

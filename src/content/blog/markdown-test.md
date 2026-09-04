@@ -2,6 +2,8 @@
 title: Markdown 与代码高亮测试
 description: 用于验证 Markdown 渲染与 Shiki 代码高亮的测试文章，同时演示草稿机制之外的全部排版元素。
 pubDate: 2026-08-20
+tags:
+  - Markdown
 ---
 
 这篇文章用来验证 MVP 的 Markdown 渲染与代码高亮是否正常。

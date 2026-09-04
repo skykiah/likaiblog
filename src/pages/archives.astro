@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+
+const years = [...byYear.entries()].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="归档 · 来开博客" description="来开博客全部文章的按年归档">
+  <h1 class="page-title">归档</h1>
+  <p class="count-hint">共 {posts.length} 篇</p>
+  {
+    years.map(([year, yearPosts]) => (
+      <section class="year-group">
+        <h2 class="year">{year}</h2>
+        <ul class="post-list">
+          {yearPosts.map((post) => (
+            <li class="post-item">
+              <a href={`/blog/${post.id}/`} class="post-link">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}
+                </time>
+                <span class="post-title">{post.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: 1.6rem;
+    margin: 2.5rem 0 0.25rem;
+  }
+
+  .count-hint {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .year {
+    font-size: 1.25rem;
+    margin: 2rem 0 0.75rem;
+    color: var(--accent);
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-item {
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 0;
+  }
+
+  .post-link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--accent);
+  }
+
+  time {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .post-title {
+    font-size: 1rem;
+  }
+</style>
